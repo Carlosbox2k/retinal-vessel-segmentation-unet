@@ -3,5 +3,4 @@ venv/
 pycache/
 *.pyc
 *.pyo
-.env
 .venv

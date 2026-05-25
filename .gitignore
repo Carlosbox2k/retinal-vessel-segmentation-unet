@@ -4,3 +4,5 @@ pycache/
 *.pyc
 *.pyo
 .venv
+env
+.vscode

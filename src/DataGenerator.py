@@ -7,13 +7,17 @@ import matplotlib
 from keras.models import Model
 from keras.optimizers import Adam
 import os
+from dotenv import load_dotenv
 
+from DataPreprocesing import padding, unpadding
+
+load_dotenv()
 
 ROOT_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(ROOT_PATH, "test")
 TRAIN_PATH = os.path.join(ROOT_PATH, "training")
-HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE", 565))
-VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE", 584))
+HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE"))
+VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE"))
 DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER", 40))
 
 training_images_path = os.path.join(TRAIN_PATH, "images")
@@ -119,12 +123,26 @@ ax[1].set_title('Mask')
 plt.show()
 '''
 
+fig, ax = plt.subplots(1,3, figsize=(10,5))
+im = X[0]
+im_padded = padding(im, 576, 592)
+im_unpadded = unpadding(im_padded)
+print(f"X shape: x: {im.shape[1]} y: {im.shape[0]}")
+print(f"X padded shape: x: {im_padded.shape[1]} y: {im_padded.shape[0]}")
+print(f"X unpadded shape: x: {im_unpadded.shape[1]} y: {im_unpadded.shape[0]}")
+ax[0].imshow(im, cmap='gray')
+ax[0].set_title('Image')
+ax[1].imshow(im_padded, cmap='gray')
+ax[1].set_title('Image padded')
+ax[2].imshow(im_unpadded, cmap='gray')
+ax[2].set_title('Image unpadded')
+plt.show()
+'''
 im, mk, mn = data_augmentation2(X[0], y[0], z[0])
 fig, ax = plt.subplots(2,3, figsize=(10,5))
 print(f"X shape: {im.shape}")
 print(f"y shape: {mk.shape}")
 print(f"z shape: {mn.shape}")
-
 print(f"X shape: {X[0].shape}")
 print(f"y shape: {y[0].shape}")
 print(f"z shape: {z[0].shape}")
@@ -141,7 +159,7 @@ ax[1,1].set_title('Mask')
 ax[1,2].imshow(z[0], cmap='gray')
 ax[1,2].set_title('Manual')
 plt.show()
-
+'''
 
 '''
 print(f"X shape: {X.shape}")

@@ -3,9 +3,6 @@ from keras.models import Model
 import tensorflow as tf
 import os
 
-HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE", 565))
-VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE", 584))
-
 def conv_block(input, num_filters):
     conv = Conv2D(num_filters, (3, 3), activation="relu", padding="same", kernel_initializer='he_normal')(input)
     conv = Conv2D(num_filters, (3, 3), activation="relu", padding="same", kernel_initializer='he_normal')(conv)

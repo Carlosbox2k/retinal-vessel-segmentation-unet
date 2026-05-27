@@ -3,9 +3,12 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib
+import os
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
 from keras.models import Model
 from keras.optimizers import Adam
-import os
 from dotenv import load_dotenv
 
 from DataPreprocesing import padding, unpadding
@@ -43,9 +46,9 @@ def load_data(images_path, masks_path, manual_path):
     masks = []
     manual = []
 
-    images_paths = sorted(glob(images_path + "\\*"))
-    masks_paths = sorted(glob(masks_path + "\\*"))
-    manual_paths = sorted(glob(manual_path + "\\*"))
+    images_paths = sorted(glob(os.path.join(images_path, "*")))
+    masks_paths = sorted(glob(os.path.join(masks_path, "*")))
+    manual_paths = sorted(glob(os.path.join(manual_path, "*")))
     for i in range(len(images_paths)): # Asumimos que hay una máscara por imagen
         images.append(load_image(images_paths[i], is_binary=False))
         masks.append(load_image(masks_paths[i], is_binary=True))
@@ -109,67 +112,3 @@ def append_augmented_data(X, y, z):
         y = np.insert(y, n, augmented_y[i], axis=0)
         z = np.insert(z, n, augmented_z[i], axis=0)
     return X, y, z
-
-X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
-X, y, z = append_augmented_data(X, y, z)
-'''
-print("X shape:", X.shape)
-print("y shape:", y.shape)
-
-n = len(X)
-fig, ax = plt.subplots(1,2, figsize=(10,5))
-ax[0].imshow(X[n-1], cmap='gray')
-ax[0].set_title('Image')
-ax[1].imshow(y[n-1], cmap='gray')
-ax[1].set_title('Mask')
-plt.show()
-'''
-
-fig, ax = plt.subplots(1,3, figsize=(10,5))
-im = X[0]
-im_padded = padding(im)
-im_unpadded = unpadding(im_padded)
-print(f"X shape: x: {im.shape[1]} y: {im.shape[0]}")
-print(f"X padded shape: x: {im_padded.shape[1]} y: {im_padded.shape[0]}")
-print(f"X unpadded shape: x: {im_unpadded.shape[1]} y: {im_unpadded.shape[0]}")
-ax[0].imshow(im, cmap='gray')
-ax[0].set_title('Image')
-ax[1].imshow(im_padded, cmap='gray')
-ax[1].set_title('Image padded')
-ax[2].imshow(im_unpadded, cmap='gray')
-ax[2].set_title('Image unpadded')
-plt.show()
-'''
-im, mk, mn = data_augmentation2(X[0], y[0], z[0])
-fig, ax = plt.subplots(2,3, figsize=(10,5))
-print(f"X shape: {im.shape}")
-print(f"y shape: {mk.shape}")
-print(f"z shape: {mn.shape}")
-print(f"X shape: {X[0].shape}")
-print(f"y shape: {y[0].shape}")
-print(f"z shape: {z[0].shape}")
-ax[0,0].imshow(im, cmap='gray')
-ax[0,0].set_title('Image')
-ax[0,1].imshow(mk, cmap='gray')
-ax[0,1].set_title('Mask')
-ax[0,2].imshow(mn, cmap='gray')
-ax[0,2].set_title('Manual')
-ax[1,0].imshow(X[0], cmap='gray')
-ax[1,0].set_title('Image')
-ax[1,1].imshow(y[0], cmap='gray')
-ax[1,1].set_title('Mask')
-ax[1,2].imshow(z[0], cmap='gray')
-ax[1,2].set_title('Manual')
-plt.show()
-'''
-
-'''
-print(f"X shape: {X.shape}")
-print(f"y shape: {y.shape}")
-fig, ax = plt.subplots(1,2, figsize=(10,5))
-ax[0].imshow(X[0], cmap='gray')
-ax[0].set_title('Image')
-ax[1].imshow(y[0], cmap='gray')
-ax[1].set_title('Mask')
-plt.show()
-'''

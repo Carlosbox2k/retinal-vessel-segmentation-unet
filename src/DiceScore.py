@@ -2,7 +2,23 @@ from numpy import mean
 import numpy as np
 import tensorflow as tf
 
+def dice_score(z_true, z_pred, mask=None):
+    z_true_flat = tf.cast(tf.reshape(z_true, [-1]), tf.float32)
+    z_pred_flat = tf.cast(tf.reshape(z_pred, [-1]), tf.float32)
+    if mask is not None:
+        mask_flat = tf.cast(tf.reshape(mask, [-1]), tf.float32)
+        z_pred_flat = mask_flat * z_pred_flat
+    intersection = tf.reduce_sum(z_true_flat * z_pred_flat)
+    return (2.0 * intersection) / (tf.reduce_sum(z_true_flat) + tf.reduce_sum(z_pred_flat))
 
+def dice_score_group(z_true, z_pred, mask):
+    scores = []
+    for i in range(z_true.shape[0]):
+        score = dice_score(z_true[i], z_pred[i], mask[i])
+        scores.append(score)
+    print("Group scores:", scores)
+    return np.mean(scores)
+'''
 def dice_score_mask(images1, images2, masks):
     scores = []
     images2 = tf.squeeze(images2, axis=-1)  # Elimina el canal extra
@@ -26,3 +42,4 @@ def dice_score_mask(images1, images2, masks):
 
 def image_to_list(image):
     return tf.reshape(image, [-1])
+'''

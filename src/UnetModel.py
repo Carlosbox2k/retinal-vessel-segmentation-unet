@@ -1,6 +1,5 @@
 from keras.layers import Conv2D, Input, MaxPooling2D, Conv2DTranspose, concatenate
 from keras.models import Model
-import tensorflow as tf
 import os
 
 def conv_block(input, num_filters):

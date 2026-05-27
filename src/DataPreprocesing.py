@@ -6,10 +6,12 @@ load_dotenv()
 
 HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE", 565))
 VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE", 584))
+HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
+VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
 
-def padding(image, target_width, target_height):
-    pad_height = max(0, target_height - VERTICAL_SIZE)
-    pad_width = max(0, target_width - HORIZONTAL_SIZE)
+def padding(image):
+    pad_height = max(0, VERTICAL_PADDING_SIZE - VERTICAL_SIZE)
+    pad_width = max(0, HORIZONTAL_PADDING_SIZE - HORIZONTAL_SIZE)
     
     pad_top = pad_height // 2
     pad_bottom = pad_height - pad_top
@@ -31,3 +33,10 @@ def unpadding(image):
     unpadded_image = image[pad_top:pad_top+VERTICAL_SIZE, pad_left:pad_left+HORIZONTAL_SIZE]
     
     return unpadded_image
+
+def mask_and_padding(X, y):
+    padded_X = []
+    for i in range(len(X)):
+        masked = y[i] * X[i]
+        padded_X.append(padding(masked))
+    return np.array(padded_X)

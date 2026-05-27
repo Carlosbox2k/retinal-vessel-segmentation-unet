@@ -1,4 +1,3 @@
-import tensorflow as tf
 from glob import glob
 import numpy as np
 import cv2
@@ -19,6 +18,9 @@ TRAIN_PATH = os.path.join(ROOT_PATH, "training")
 HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE"))
 VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE"))
 DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER", 40))
+
+HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
+VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
 
 training_images_path = os.path.join(TRAIN_PATH, "images")
 training_masks_path = os.path.join(TRAIN_PATH, "mask")
@@ -125,7 +127,7 @@ plt.show()
 
 fig, ax = plt.subplots(1,3, figsize=(10,5))
 im = X[0]
-im_padded = padding(im, 576, 592)
+im_padded = padding(im)
 im_unpadded = unpadding(im_padded)
 print(f"X shape: x: {im.shape[1]} y: {im.shape[0]}")
 print(f"X padded shape: x: {im_padded.shape[1]} y: {im_padded.shape[0]}")

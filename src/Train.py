@@ -1,9 +1,10 @@
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
-
 from keras.models import Model
 from keras import mixed_precision
 import tensorflow as tf
+import matplotlib.pyplot as plt
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
 
 # Habilitar precisión mixta FP16 para reducir el consumo a la mitad
 mixed_precision.set_global_policy('mixed_float16')
@@ -22,7 +23,7 @@ from sklearn.model_selection import KFold, cross_validate
 from DataGenerator import load_data
 import numpy as np
 from DataPreprocesing import mask_and_padding
-from DiceScore import dice_score_group, dice_score
+from DiceScore import dice_score_group, dice_score, dice_score_loss, bce_dice_loss
 
 load_dotenv()
 
@@ -38,10 +39,12 @@ def load_paths():
      training_manual_path = os.path.join(TRAIN_PATH, "1st_manual")
      return training_images_path, training_masks_path, training_manual_path
 
+generated_images = []
+
 def train_model():
     training_images_path, training_masks_path, training_manual_path = load_paths()
     MODEL = build_model(input_shape=(VERTICAL_PADDING_SIZE, HORIZONTAL_PADDING_SIZE, 1))
-    MODEL.compile(loss="binary_crossentropy", optimizer="Adam", metrics=[dice_score])
+    MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
 
     X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
 
@@ -60,12 +63,15 @@ def train_model():
         y_train, y_test = mask_and_padding(y_train, y_train), mask_and_padding(y_test, y_test)
         
         # Entrenar el modelo (usamos el .fit original de Keras)
-        MODEL.fit(X_train, z_train, epochs=5, batch_size=6, verbose=1)
+        MODEL.fit(X_train, z_train, epochs=50, batch_size=6, verbose=1)
         
         # Predecir sobre X_test
         z_pred = MODEL.predict(X_test)
-        z_pred = np.round(z_pred) # Binarizar salidas
+        print("MAX VALUE" + str(z_pred.max()))
+        # z_pred = np.round(z_pred) # Binarizar salidas
+        transform_to_img(z_pred) 
         print("Z_PRED_SHAPE:" + str(z_pred.shape))
+        
 
         # Calcular métrica usando DICE score
         score = dice_score_group(z_test, z_pred, y_test)
@@ -73,6 +79,21 @@ def train_model():
         scores.append(score)
 
     print(f"Media DICE Score: {np.mean(scores)}")
+    show_generated_images()
+
+def transform_to_img(z_pred):
+    for i in range(z_pred.shape[0]):
+        img = z_pred[i, :, :, 0]
+        print(img.max())
+        generated_images.append(img)
+    print("Generated images size:", len(generated_images))
+
+def show_generated_images():
+    fig, ax = plt.subplots(5,4, figsize=(10,5))
+    for fold in range(5):
+        for image in range(4):
+            ax[fold,image].imshow(generated_images[image + 4*fold], cmap='gray')
+    plt.show()
 
 if __name__ == "__main__":
     train_model()

@@ -27,13 +27,15 @@ from DiceScore import dice_score_group, dice_score, dice_score_loss, bce_dice_lo
 
 load_dotenv()
 
-ROOT_PATH = os.path.abspath("data")
-TEST_PATH = os.path.join(ROOT_PATH, "test")
-TRAIN_PATH = os.path.join(ROOT_PATH, "training")
+DATA_PATH = os.path.abspath("data")
+MODELS_PATH = os.path.abspath("models")
+TEST_PATH = os.path.join(DATA_PATH, "test")
+TRAIN_PATH = os.path.join(DATA_PATH, "training")
 HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
 VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
+OVERWRITE_MODELS = True
 
-def load_paths():
+def load_data_training_paths():
      training_images_path = os.path.join(TRAIN_PATH, "images")
      training_masks_path = os.path.join(TRAIN_PATH, "mask")
      training_manual_path = os.path.join(TRAIN_PATH, "1st_manual")
@@ -42,9 +44,11 @@ def load_paths():
 generated_images = []
 
 def train_model():
-    training_images_path, training_masks_path, training_manual_path = load_paths()
+
     MODEL = build_model(input_shape=(VERTICAL_PADDING_SIZE, HORIZONTAL_PADDING_SIZE, 1))
     MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
+    
+    training_images_path, training_masks_path, training_manual_path = load_data_training_paths()
 
     X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
 
@@ -52,6 +56,7 @@ def train_model():
     
     scores = []
 
+    fold = 1
     for train_index, test_index in kf.split(X):
         # Separamos X, z (segmentación manual) e y (máscaras visuales FOV)
         X_train, X_test = X[train_index], X[test_index]
@@ -62,21 +67,22 @@ def train_model():
         z_train, z_test = mask_and_padding(z_train, y_train), mask_and_padding(z_test, y_test)
         y_train, y_test = mask_and_padding(y_train, y_train), mask_and_padding(y_test, y_test)
         
-        # Entrenar el modelo (usamos el .fit original de Keras)
+        # Entrenar el modelo
         MODEL.fit(X_train, z_train, epochs=50, batch_size=6, verbose=1)
         
         # Predecir sobre X_test
         z_pred = MODEL.predict(X_test)
-        print("MAX VALUE" + str(z_pred.max()))
-        # z_pred = np.round(z_pred) # Binarizar salidas
-        transform_to_img(z_pred) 
-        print("Z_PRED_SHAPE:" + str(z_pred.shape))
-        
+        transform_to_img(z_pred)
 
         # Calcular métrica usando DICE score
         score = dice_score_group(z_test, z_pred, y_test)
         print("DICE Score: " + str(score))
         scores.append(score)
+
+        MODEL_SAVE_PATH = os.path.join(MODELS_PATH, f"model_{fold}.keras")
+        MODEL.save(MODEL_SAVE_PATH, overwrite=OVERWRITE_MODELS)
+        
+        fold += 1
 
     print(f"Media DICE Score: {np.mean(scores)}")
     show_generated_images()

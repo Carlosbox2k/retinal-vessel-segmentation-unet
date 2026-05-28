@@ -55,6 +55,23 @@ def load_data(images_path, masks_path, manual_path):
         manual.append(load_image(manual_paths[i], is_binary=True))
     return np.array(images), np.array(masks), np.array(manual)
 
+def load_data_test(images_path, masks_path, manual_path1, manual_path2):
+    images = []
+    masks = []
+    manual1 = []
+    manual2 = []
+
+    images_paths = sorted(glob(os.path.join(images_path, "*")))
+    masks_paths = sorted(glob(os.path.join(masks_path, "*")))
+    manual1_paths = sorted(glob(os.path.join(manual_path1, "*")))
+    manual2_paths = sorted(glob(os.path.join(manual_path2, "*")))
+    for i in range(len(images_paths)): # Asumimos que hay una máscara por imagen
+        images.append(load_image(images_paths[i], is_binary=False))
+        masks.append(load_image(masks_paths[i], is_binary=True))
+        manual1.append(load_image(manual1_paths[i], is_binary=True))
+        manual2.append(load_image(manual2_paths[i], is_binary=True))
+    return np.array(images), np.array(masks), np.array(manual1), np.array(manual2)
+
 def data_augmentation(image, mask, manual):
     if np.random.rand() < 0.5:
         image = cv2.flip(image, 1)  # Flip horizontal

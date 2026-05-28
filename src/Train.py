@@ -3,6 +3,13 @@ from keras.models import Model
 from keras import mixed_precision
 import tensorflow as tf
 import matplotlib.pyplot as plt
+from UnetModel import build_model
+from dotenv import load_dotenv
+from sklearn.model_selection import KFold
+from DataGenerator import load_data, append_augmented_data
+import numpy as np
+from DataPreprocesing import mask_and_padding
+from DiceScore import dice_score_group, dice_score, bce_dice_loss
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
 
@@ -16,14 +23,6 @@ if gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
     except RuntimeError as e:
         print(e)
-
-from UnetModel import build_model
-from dotenv import load_dotenv
-from sklearn.model_selection import KFold, cross_validate
-from DataGenerator import load_data
-import numpy as np
-from DataPreprocesing import mask_and_padding
-from DiceScore import dice_score_group, dice_score, dice_score_loss, bce_dice_loss
 
 load_dotenv()
 
@@ -51,6 +50,7 @@ def train_model():
     training_images_path, training_masks_path, training_manual_path = load_data_training_paths()
 
     X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
+    X, y, z = append_augmented_data(X, y, z)
 
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
     
@@ -68,7 +68,7 @@ def train_model():
         y_train, y_test = mask_and_padding(y_train, y_train), mask_and_padding(y_test, y_test)
         
         # Entrenar el modelo
-        MODEL.fit(X_train, z_train, epochs=50, batch_size=6, verbose=1)
+        MODEL.fit(X_train, z_train, epochs=100, batch_size=6, verbose=1)
         
         # Predecir sobre X_test
         z_pred = MODEL.predict(X_test)

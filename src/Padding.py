@@ -1,17 +1,17 @@
-import numpy as np
+from numpy import pad
 
 
 def padding_horizontal(image, current_size, desired_size):
     horizontal_padding_size = desired_size - current_size
     left_padding_size = horizontal_padding_size // 2
     right_padding_size = horizontal_padding_size - left_padding_size
-    return np.pad(image, ((0,0), (left_padding_size, right_padding_size)), mode='constant')
+    return pad(image, ((0,0), (left_padding_size, right_padding_size)), mode='constant')
 
 def padding_vertical(image, current_size, desired_size):
     vertical_padding_size = desired_size - current_size
     top_padding_size = vertical_padding_size // 2
     bottom_padding_size = vertical_padding_size - top_padding_size
-    return np.pad(image, ((top_padding_size, bottom_padding_size), (0,0)), mode='constant')
+    return pad(image, ((top_padding_size, bottom_padding_size), (0,0)), mode='constant')
     
 def cut_horizontal(image, current_size, desired_size):
     horizontal_cut_size = current_size - desired_size

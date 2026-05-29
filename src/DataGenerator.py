@@ -1,32 +1,28 @@
 from glob import glob
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-import matplotlib
 import os
-from DataPreprocesing import transform_image
-from DataPostprocesing import detransform_image
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-from keras.models import Model
-from keras.optimizers import Adam
 from dotenv import load_dotenv
 
+
 load_dotenv()
+
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
+DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER", 40))
 
 ROOT_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(ROOT_PATH, "test")
 TRAIN_PATH = os.path.join(ROOT_PATH, "training")
-HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
-VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
-DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER", 40))
 
-training_images_path = os.path.join(TRAIN_PATH, "images")
-training_masks_path = os.path.join(TRAIN_PATH, "mask")
-training_manual_path = os.path.join(TRAIN_PATH, "1st_manual")
+TRAINING_IMAGE_PATH = os.path.join(TRAIN_PATH, "images")
+TRAINING_MASKS_PATH = os.path.join(TRAIN_PATH, "mask")
+TRAINING_MANUAL_PATH = os.path.join(TRAIN_PATH, "manual_1st")
 
-print(f"Training images path: {training_images_path}")
+TEST_IMAGE_PATH = os.path.join(TEST_PATH, "images")
+TEST_MASKS_PATH = os.path.join(TEST_PATH, "mask")
+TEST_1ST_MANUAL_PATH = os.path.join(TEST_PATH, "1st_manual")
+TEST_2ND_MANUAL_PATH = os.path.join(TEST_PATH, "2nd_manual")
 
 def load_image(path, is_binary):
     image = cv2.imread(path)
@@ -38,30 +34,30 @@ def load_image(path, is_binary):
         image = image/255.  # normalize (float)
     return image
 
-def load_data(images_path, masks_path, manual_path):
+def load_training_data():
     images = []
     masks = []
     manual = []
 
-    images_paths = sorted(glob(os.path.join(images_path, "*")))
-    masks_paths = sorted(glob(os.path.join(masks_path, "*")))
-    manual_paths = sorted(glob(os.path.join(manual_path, "*")))
+    images_paths = sorted(glob(os.path.join(TRAINING_IMAGE_PATH, "*")))
+    masks_paths = sorted(glob(os.path.join(TRAINING_MASKS_PATH, "*")))
+    manual_paths = sorted(glob(os.path.join(TRAINING_MANUAL_PATH, "*")))
     for i in range(len(images_paths)): # Asumimos que hay una máscara por imagen
         images.append(load_image(images_paths[i], is_binary=False))
         masks.append(load_image(masks_paths[i], is_binary=True))
         manual.append(load_image(manual_paths[i], is_binary=True))
     return np.array(images), np.array(masks), np.array(manual)
 
-def load_data_test(images_path, masks_path, manual_path1, manual_path2):
+def load_data_test():
     images = []
     masks = []
     manual1 = []
     manual2 = []
 
-    images_paths = sorted(glob(os.path.join(images_path, "*")))
-    masks_paths = sorted(glob(os.path.join(masks_path, "*")))
-    manual1_paths = sorted(glob(os.path.join(manual_path1, "*")))
-    manual2_paths = sorted(glob(os.path.join(manual_path2, "*")))
+    images_paths = sorted(glob(os.path.join(TEST_IMAGE_PATH, "*")))
+    masks_paths = sorted(glob(os.path.join(TEST_MASKS_PATH, "*")))
+    manual1_paths = sorted(glob(os.path.join(TEST_1ST_MANUAL_PATH, "*")))
+    manual2_paths = sorted(glob(os.path.join(TEST_2ND_MANUAL_PATH, "*")))
     for i in range(len(images_paths)): # Asumimos que hay una máscara por imagen
         images.append(load_image(images_paths[i], is_binary=False))
         masks.append(load_image(masks_paths[i], is_binary=True))
@@ -116,19 +112,3 @@ def append_augmented_data(X, y, z):
         y = np.insert(y, n, augmented_y[i], axis=0)
         z = np.insert(z, n, augmented_z[i], axis=0)
     return X, y, z
-
-if __name__ == "__main__":
-    X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
-    org = X[0]
-    org = cv2.resize(org, (HORIZONTAL_UNET_SIZE-100, VERTICAL_UNET_SIZE-50))
-    print(org.shape)
-    trans = transform_image(org)
-    print(trans.shape)
-    detrans = detransform_image(trans, org.shape)
-    print(detrans.shape)
-    fig, ax = plt.subplots(1,3, figsize=(10,5))
-    ax[0].imshow(org, cmap='gray')
-    ax[1].imshow(trans, cmap='gray')
-    ax[2].imshow(detrans, cmap='gray')
-    
-    plt.show()

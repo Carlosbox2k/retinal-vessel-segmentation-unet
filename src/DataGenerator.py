@@ -15,11 +15,11 @@ ROOT_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(ROOT_PATH, "test")
 TRAIN_PATH = os.path.join(ROOT_PATH, "training")
 
-TRAINING_IMAGE_PATH = os.path.join(TRAIN_PATH, "images")
+TRAINING_IMAGES_PATH = os.path.join(TRAIN_PATH, "images")
 TRAINING_MASKS_PATH = os.path.join(TRAIN_PATH, "mask")
 TRAINING_MANUAL_PATH = os.path.join(TRAIN_PATH, "manual_1st")
 
-TEST_IMAGE_PATH = os.path.join(TEST_PATH, "images")
+TEST_IMAGES_PATH = os.path.join(TEST_PATH, "images")
 TEST_MASKS_PATH = os.path.join(TEST_PATH, "mask")
 TEST_1ST_MANUAL_PATH = os.path.join(TEST_PATH, "1st_manual")
 TEST_2ND_MANUAL_PATH = os.path.join(TEST_PATH, "2nd_manual")
@@ -39,7 +39,7 @@ def load_training_data():
     masks = []
     manual = []
 
-    images_paths = sorted(glob(os.path.join(TRAINING_IMAGE_PATH, "*")))
+    images_paths = sorted(glob(os.path.join(TRAINING_IMAGES_PATH, "*")))
     masks_paths = sorted(glob(os.path.join(TRAINING_MASKS_PATH, "*")))
     manual_paths = sorted(glob(os.path.join(TRAINING_MANUAL_PATH, "*")))
     for i in range(len(images_paths)): # Asumimos que hay una máscara por imagen
@@ -54,7 +54,7 @@ def load_data_test():
     manual1 = []
     manual2 = []
 
-    images_paths = sorted(glob(os.path.join(TEST_IMAGE_PATH, "*")))
+    images_paths = sorted(glob(os.path.join(TEST_IMAGES_PATH, "*")))
     masks_paths = sorted(glob(os.path.join(TEST_MASKS_PATH, "*")))
     manual1_paths = sorted(glob(os.path.join(TEST_1ST_MANUAL_PATH, "*")))
     manual2_paths = sorted(glob(os.path.join(TEST_2ND_MANUAL_PATH, "*")))

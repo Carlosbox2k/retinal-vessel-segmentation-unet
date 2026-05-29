@@ -9,9 +9,9 @@ load_dotenv()
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
 
-def detransform_image(image, image_size):
-    horizontal_size = image_size[1]
-    vertical_size = image_size[0]
+def detransform_image(image, original_image_size):
+    horizontal_size = original_image_size[1]
+    vertical_size = original_image_size[0]
     detransformed_image = image
     if horizontal_size < HORIZONTAL_UNET_SIZE:
         detransformed_image = cut_horizontal(detransformed_image, current_size=HORIZONTAL_UNET_SIZE, desired_size=horizontal_size)

@@ -56,7 +56,7 @@ def predict():
     print("DICE Score 2nd manual: " + str(score2))
     print("DICE Score average: " + str(total_score))
 
-    z_pred_detransformed = detransform(z_pred, images_sizes)
+    z_pred_detransformed = detransform(z_pred, original_image_sizes=images_sizes)
 
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)

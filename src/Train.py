@@ -32,7 +32,6 @@ TEST_PATH = os.path.join(DATA_PATH, "test")
 TRAIN_PATH = os.path.join(DATA_PATH, "training")
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
-OVERWRITE_MODELS = False
 
 def load_data_training_paths():
      training_images_path = os.path.join(TRAIN_PATH, "images")
@@ -42,7 +41,7 @@ def load_data_training_paths():
 
 generated_images = []
 
-def train_model():
+def train_model(overwrite_models=True):
 
     MODEL = build_model(input_shape=(VERTICAL_UNET_SIZE, HORIZONTAL_UNET_SIZE, 1))
     MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
@@ -80,7 +79,7 @@ def train_model():
         scores.append(score)
 
         MODEL_SAVE_PATH = os.path.join(MODELS_PATH, f"model_{fold}.keras")
-        MODEL.save(MODEL_SAVE_PATH, overwrite=OVERWRITE_MODELS)
+        MODEL.save(MODEL_SAVE_PATH, overwrite=overwrite_models)
         
         fold += 1
 
@@ -102,4 +101,4 @@ def show_generated_images():
     plt.show()
 
 if __name__ == "__main__":
-    train_model()
+    train_model(overwrite_models=True)

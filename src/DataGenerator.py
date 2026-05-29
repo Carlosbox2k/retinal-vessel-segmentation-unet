@@ -70,6 +70,7 @@ def load_data_test(images_path, masks_path, manual_path1, manual_path2):
     return np.array(images), np.array(masks), np.array(manual1), np.array(manual2)
 
 def data_augmentation(image, mask, manual):
+    height, width = image.shape[:2]
     if np.random.rand() < 0.5:
         image = cv2.flip(image, 1)  # Flip horizontal
         mask = cv2.flip(mask, 1)
@@ -80,16 +81,16 @@ def data_augmentation(image, mask, manual):
         manual = cv2.flip(manual, 0)
     if np.random.rand() < 0.5:
         angle = np.random.uniform(-15, 15)
-        M = cv2.getRotationMatrix2D((HORIZONTAL_UNET_SIZE/2, VERTICAL_UNET_SIZE/2), angle, 1)
-        image = cv2.warpAffine(image, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
-        mask = cv2.warpAffine(mask, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
-        manual = cv2.warpAffine(manual, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        M = cv2.getRotationMatrix2D((width/2, height/2), angle, 1)
+        image = cv2.warpAffine(image, M, (width, height))
+        mask = cv2.warpAffine(mask, M, (width, height))
+        manual = cv2.warpAffine(manual, M, (width, height))
     if np.random.rand() < 0.5:
         scale = np.random.uniform(0.8, 0.9)
-        M = cv2.getRotationMatrix2D((HORIZONTAL_UNET_SIZE/2, VERTICAL_UNET_SIZE/2), 0, scale)
-        image = cv2.warpAffine(image, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
-        mask = cv2.warpAffine(mask, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
-        manual = cv2.warpAffine(manual, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        M = cv2.getRotationMatrix2D((width/2, height/2), 0, scale)
+        image = cv2.warpAffine(image, M, (width, height))
+        mask = cv2.warpAffine(mask, M, (width, height))
+        manual = cv2.warpAffine(manual, M, (width, height))
     
     mask = np.round(mask)   # Para que la máscara siga siendo binaria después de la transformación en los bordes
     manual = np.round(manual)

@@ -4,7 +4,8 @@ import os
 import cv2
 from DataGenerator import load_data_test
 from DiceScore import dice_score_group
-from Train import mask_and_padding
+from Train import transform
+from DataPostprocesing import detransform
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -15,6 +16,7 @@ MODEL_PATH = os.path.join(MODELS_PATH, MODEL_FILE)
 DATA_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 GENERATED_PATH = os.path.join(DATA_PATH, "generated")
+WRITE_IMAGES = True
 
 def load_data_test_paths():
     test_images_path = os.path.join(TEST_PATH, "images")
@@ -36,17 +38,27 @@ def prediction_scores(z_true_1, z_true_2, z_pred, mask):
 def save_images(z_pred):
     for i in range(z_pred.shape[0]):
         img = z_pred[i, :, :, 0] * 255
-        path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
-        cv2.imwrite(path, img)
+        if WRITE_IMAGES:
+            path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
+            cv2.imwrite(path, img)
+
+def get_images_sizes(images):
+    images_sizes = []
+    for i in range(images.shape[0]):
+        image = images[i]
+        images_sizes.append((image.shape[0], image.shape[1]))
+    return images_sizes
 
 def predict():
     MODEL = load_model(MODEL_PATH)
     X_test, y_test, z_test_1, z_test_2 = load_data()
+
+    images_sizes = get_images_sizes(X_test)
     
-    X_test = mask_and_padding(X_test, y_test)
-    z_test_1 = mask_and_padding(z_test_1, y_test)
-    z_test_2 = mask_and_padding(z_test_2, y_test)
-    y_test = mask_and_padding(y_test, y_test)
+    X_test = transform(X_test, masks=y_test)
+    z_test_1 = transform(z_test_1, masks=y_test)
+    z_test_2 = transform(z_test_2, masks=y_test)
+    y_test = transform(y_test)
     
     z_pred = MODEL.predict(X_test)
 
@@ -54,7 +66,10 @@ def predict():
     print("DICE Score 1st manual: " + str(score1))
     print("DICE Score 2nd manual: " + str(score2))
     print("DICE Score average: " + str(total_score))
-    save_images(z_pred)
+
+    z_pred_detransformed = detransform(z_pred, images_sizes)
+
+    save_images(z_pred_detransformed)
 
 if __name__ == "__main__":
     predict()

@@ -1,7 +1,9 @@
 from numpy import mean
 import numpy as np
 import tensorflow as tf
+import keras
 
+@keras.saving.register_keras_serializable()
 def dice_score(z_true, z_pred, mask=None):
     z_true_flat = tf.cast(tf.reshape(z_true, [-1]), tf.float32)
     z_pred_flat = tf.cast(tf.reshape(z_pred, [-1]), tf.float32)
@@ -12,6 +14,7 @@ def dice_score(z_true, z_pred, mask=None):
     intersection = tf.reduce_sum(z_true_flat * z_pred_flat)
     return (2.0 * intersection) / (tf.reduce_sum(z_true_flat) + tf.reduce_sum(z_pred_flat))
 
+@keras.saving.register_keras_serializable()
 def dice_score_loss(z_true, z_pred, mask=None):
     z_true_flat = tf.cast(tf.reshape(z_true, [-1]), tf.float32)
     z_pred_flat = tf.cast(tf.reshape(z_pred, [-1]), tf.float32)
@@ -27,9 +30,9 @@ def dice_score_group(z_true, z_pred, mask):
     for i in range(z_true.shape[0]):
         score = dice_score(z_true[i], z_pred[i], mask[i])
         scores.append(score)
-    print("Group scores:", scores)
     return np.mean(scores)
 
+@keras.saving.register_keras_serializable()
 def bce_dice_loss(z_true, z_pred):
     bce = tf.keras.losses.binary_crossentropy(z_true, z_pred)
     dice = dice_score_loss(z_true, z_pred)

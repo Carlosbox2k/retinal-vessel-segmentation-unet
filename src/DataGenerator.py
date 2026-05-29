@@ -4,6 +4,8 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib
 import os
+from DataPreprocesing import transform_image
+from DataPostprocesing import detransform_image
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -11,19 +13,14 @@ from keras.models import Model
 from keras.optimizers import Adam
 from dotenv import load_dotenv
 
-from DataPreprocesing import padding, unpadding
-
 load_dotenv()
 
 ROOT_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(ROOT_PATH, "test")
 TRAIN_PATH = os.path.join(ROOT_PATH, "training")
-HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE"))
-VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE"))
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
 DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER", 40))
-
-HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
-VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
 
 training_images_path = os.path.join(TRAIN_PATH, "images")
 training_masks_path = os.path.join(TRAIN_PATH, "mask")
@@ -33,7 +30,7 @@ print(f"Training images path: {training_images_path}")
 
 def load_image(path, is_binary):
     image = cv2.imread(path)
-    image = cv2.resize(image, (HORIZONTAL_SIZE, VERTICAL_SIZE))
+    #image = cv2.resize(image, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
     image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)   # shape: (size,size,3) -> (size,size,1)
     if is_binary:
         image = image/255   # normalize (int)
@@ -83,29 +80,18 @@ def data_augmentation(image, mask, manual):
         manual = cv2.flip(manual, 0)
     if np.random.rand() < 0.5:
         angle = np.random.uniform(-15, 15)
-        M = cv2.getRotationMatrix2D((HORIZONTAL_SIZE/2, VERTICAL_SIZE/2), angle, 1)
-        image = cv2.warpAffine(image, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-        mask = cv2.warpAffine(mask, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-        manual = cv2.warpAffine(manual, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
+        M = cv2.getRotationMatrix2D((HORIZONTAL_UNET_SIZE/2, VERTICAL_UNET_SIZE/2), angle, 1)
+        image = cv2.warpAffine(image, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        mask = cv2.warpAffine(mask, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        manual = cv2.warpAffine(manual, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
     if np.random.rand() < 0.5:
         scale = np.random.uniform(0.8, 0.9)
-        M = cv2.getRotationMatrix2D((HORIZONTAL_SIZE/2, VERTICAL_SIZE/2), 0, scale)
-        image = cv2.warpAffine(image, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-        mask = cv2.warpAffine(mask, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-        manual = cv2.warpAffine(manual, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
+        M = cv2.getRotationMatrix2D((HORIZONTAL_UNET_SIZE/2, VERTICAL_UNET_SIZE/2), 0, scale)
+        image = cv2.warpAffine(image, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        mask = cv2.warpAffine(mask, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
+        manual = cv2.warpAffine(manual, M, (HORIZONTAL_UNET_SIZE, VERTICAL_UNET_SIZE))
     
-    mask = np.round(mask) # Para que la máscara siga siendo binaria después de la transformación en los bordes
-    manual = np.round(manual)
-    return image, mask, manual
-
-def data_augmentation2(image, mask, manual):
-    scale = np.random.uniform(0.8, 0.9)
-    M = cv2.getRotationMatrix2D((HORIZONTAL_SIZE/2, VERTICAL_SIZE/2), 0, scale)
-    image = cv2.warpAffine(image, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-    mask = cv2.warpAffine(mask, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-    manual = cv2.warpAffine(manual, M, (HORIZONTAL_SIZE, VERTICAL_SIZE))
-    
-    mask = np.round(mask)
+    mask = np.round(mask)   # Para que la máscara siga siendo binaria después de la transformación en los bordes
     manual = np.round(manual)
     return image, mask, manual
 
@@ -129,3 +115,19 @@ def append_augmented_data(X, y, z):
         y = np.insert(y, n, augmented_y[i], axis=0)
         z = np.insert(z, n, augmented_z[i], axis=0)
     return X, y, z
+
+if __name__ == "__main__":
+    X, y, z = load_data(training_images_path, training_masks_path, training_manual_path)
+    org = X[0]
+    org = cv2.resize(org, (HORIZONTAL_UNET_SIZE-100, VERTICAL_UNET_SIZE-50))
+    print(org.shape)
+    trans = transform_image(org)
+    print(trans.shape)
+    detrans = detransform_image(trans, org.shape)
+    print(detrans.shape)
+    fig, ax = plt.subplots(1,3, figsize=(10,5))
+    ax[0].imshow(org, cmap='gray')
+    ax[1].imshow(trans, cmap='gray')
+    ax[2].imshow(detrans, cmap='gray')
+    
+    plt.show()

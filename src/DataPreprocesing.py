@@ -1,42 +1,33 @@
 import numpy as np
 import os
 from dotenv import load_dotenv
+from Padding import padding_horizontal, padding_vertical, cut_horizontal, cut_vertical
+
 
 load_dotenv()
 
-HORIZONTAL_SIZE = int(os.getenv("HORIZONTAL_SIZE", 565))
-VERTICAL_SIZE = int(os.getenv("VERTICAL_SIZE", 584))
-HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
-VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
 
-def padding(image):
-    pad_height = max(0, VERTICAL_PADDING_SIZE - VERTICAL_SIZE)
-    pad_width = max(0, HORIZONTAL_PADDING_SIZE - HORIZONTAL_SIZE)
+def transform_image(image):
+    horizontal_size = image.shape[1]
+    vertical_size = image.shape[0]
+    transformed_image = image
+    if horizontal_size < HORIZONTAL_UNET_SIZE:
+        transformed_image = padding_horizontal(transformed_image, current_size=horizontal_size, desired_size=HORIZONTAL_UNET_SIZE)
+    elif horizontal_size > HORIZONTAL_UNET_SIZE:
+        transformed_image = cut_horizontal(transformed_image, current_size=horizontal_size, desired_size=HORIZONTAL_UNET_SIZE)
+    if vertical_size < VERTICAL_UNET_SIZE:
+        transformed_image = padding_vertical(transformed_image, current_size=vertical_size, desired_size=VERTICAL_UNET_SIZE)
+    elif vertical_size > VERTICAL_UNET_SIZE:
+        transformed_image = cut_vertical(transformed_image, current_size=vertical_size, desired_size=VERTICAL_UNET_SIZE)
+    return transformed_image
     
-    pad_top = pad_height // 2
-    pad_bottom = pad_height - pad_top
-    pad_left = pad_width // 2
-    pad_right = pad_width - pad_left
-    
-    padded_image = np.pad(image, ((pad_top, pad_bottom), (pad_left, pad_right)), mode='constant')
-    
-    return padded_image
-
-def unpadding(image):
-    height, width = image.shape[:2]
-    pad_height = max(0, height - VERTICAL_SIZE)
-    pad_width = max(0, width - HORIZONTAL_SIZE)
-    
-    pad_top = pad_height // 2
-    pad_left = pad_width // 2
-    
-    unpadded_image = image[pad_top:pad_top+VERTICAL_SIZE, pad_left:pad_left+HORIZONTAL_SIZE]
-    
-    return unpadded_image
-
-def mask_and_padding(X, y):
-    padded_X = []
-    for i in range(len(X)):
-        masked = y[i] * X[i]
-        padded_X.append(padding(masked))
-    return np.array(padded_X)
+def transform(images, masks=None):
+    transformed = []
+    for i in range(len(images)):
+        image = images[i]
+        if masks is not None:
+            image = masks[i] * image
+        transformed.append(transform_image(image))
+    return np.array(transformed)

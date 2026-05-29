@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from sklearn.model_selection import KFold
 from DataGenerator import load_data, append_augmented_data
 import numpy as np
-from DataPreprocesing import mask_and_padding
+from DataPreprocesing import transform
 from DiceScore import dice_score_group, dice_score, bce_dice_loss
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
@@ -30,9 +30,9 @@ DATA_PATH = os.path.abspath("data")
 MODELS_PATH = os.path.abspath("models")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 TRAIN_PATH = os.path.join(DATA_PATH, "training")
-HORIZONTAL_PADDING_SIZE = int(os.getenv("HORIZONTAL_PADDING_SIZE", 576))
-VERTICAL_PADDING_SIZE = int(os.getenv("VERTICAL_PADDING_SIZE", 592))
-OVERWRITE_MODELS = True
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
+OVERWRITE_MODELS = False
 
 def load_data_training_paths():
      training_images_path = os.path.join(TRAIN_PATH, "images")
@@ -44,7 +44,7 @@ generated_images = []
 
 def train_model():
 
-    MODEL = build_model(input_shape=(VERTICAL_PADDING_SIZE, HORIZONTAL_PADDING_SIZE, 1))
+    MODEL = build_model(input_shape=(VERTICAL_UNET_SIZE, HORIZONTAL_UNET_SIZE, 1))
     MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
     
     training_images_path, training_masks_path, training_manual_path = load_data_training_paths()
@@ -63,9 +63,9 @@ def train_model():
         z_train, z_test = z[train_index], z[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        X_train, X_test = mask_and_padding(X_train, y_train), mask_and_padding(X_test, y_test)
-        z_train, z_test = mask_and_padding(z_train, y_train), mask_and_padding(z_test, y_test)
-        y_train, y_test = mask_and_padding(y_train, y_train), mask_and_padding(y_test, y_test)
+        X_train, X_test = transform(X_train, masks=y_train), transform(X_test, masks=y_test)
+        z_train, z_test = transform(z_train, masks=y_train), transform(z_test, masks=y_test)
+        y_test = transform(y_test)
         
         # Entrenar el modelo
         MODEL.fit(X_train, z_train, epochs=100, batch_size=6, verbose=1)

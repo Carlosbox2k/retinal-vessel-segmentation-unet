@@ -43,6 +43,9 @@ def train_model(overwrite_models=True):
     scores = []
     fold = 1
     for train_index, test_index in kf.split(X):
+
+        print(f"Training with fold {fold}")
+
         # Separamos X, z (segmentación manual) e y (máscaras visuales FOV)
         X_train, X_test = X[train_index], X[test_index]
         z_train, z_test = z[train_index], z[test_index]

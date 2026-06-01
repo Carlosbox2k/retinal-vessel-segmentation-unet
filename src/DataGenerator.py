@@ -17,7 +17,7 @@ TRAIN_PATH = os.path.join(ROOT_PATH, "training")
 
 TRAINING_IMAGES_PATH = os.path.join(TRAIN_PATH, "images")
 TRAINING_MASKS_PATH = os.path.join(TRAIN_PATH, "mask")
-TRAINING_MANUAL_PATH = os.path.join(TRAIN_PATH, "manual_1st")
+TRAINING_MANUAL_PATH = os.path.join(TRAIN_PATH, "1st_manual")
 
 TEST_IMAGES_PATH = os.path.join(TEST_PATH, "images")
 TEST_MASKS_PATH = os.path.join(TEST_PATH, "mask")

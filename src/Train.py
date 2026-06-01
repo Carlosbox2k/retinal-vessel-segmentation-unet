@@ -34,9 +34,6 @@ VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
 
 def train_model(overwrite_models=True):
 
-    MODEL = build_model(input_shape=(VERTICAL_UNET_SIZE, HORIZONTAL_UNET_SIZE, 1))
-    MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
-
     X, y, z = load_training_data()
     X, y, z = append_augmented_data(X, y, z)
 
@@ -55,8 +52,12 @@ def train_model(overwrite_models=True):
         z_train, z_test = transform(z_train, masks=y_train), transform(z_test, masks=y_test)
         y_test = transform(y_test)
         
+        # Definir el modelo
+        MODEL = build_model(input_shape=(VERTICAL_UNET_SIZE, HORIZONTAL_UNET_SIZE, 1))
+        MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
+
         # Entrenar el modelo
-        MODEL.fit(X_train, z_train, epochs=100, batch_size=6, verbose=1)
+        MODEL.fit(X_train, z_train, epochs=100, batch_size=3, verbose=1)
         
         # Predecir sobre X_test
         z_pred = MODEL.predict(X_test)

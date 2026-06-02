@@ -4,12 +4,9 @@ import keras
 
 
 @keras.saving.register_keras_serializable() # Registra la función en el diccionario de objetos personalizados de Keras
-def dice_score_loss(z_true, z_pred, mask=None):
+def dice_score_loss(z_true, z_pred):
     z_true_flat = tf.cast(tf.reshape(z_true, [-1]), tf.float32)
     z_pred_flat = tf.cast(tf.reshape(z_pred, [-1]), tf.float32)
-    if mask is not None:
-        mask_flat = tf.cast(tf.reshape(mask, [-1]), tf.float32)
-        z_pred_flat = mask_flat * z_pred_flat
     intersection = tf.reduce_sum(z_true_flat * z_pred_flat)
     return 1 - (2.0 * intersection) / (tf.reduce_sum(z_true_flat) + tf.reduce_sum(z_pred_flat))
 

@@ -23,8 +23,8 @@ def detransform_image(image, original_image_size):
         detransformed_image = padding_vertical(detransformed_image, current_size=VERTICAL_UNET_SIZE, desired_size=vertical_size)
     return detransformed_image
 
-def detransform(images, original_image_sizes):
+def detransform(images, masks, original_image_sizes):
     transformed = []
     for i in range(images.shape[0]):
-        transformed.append(detransform_image(images[i], original_image_sizes[i]))
+        transformed.append(detransform_image(masks[i] * images[i,:,:,0], original_image_sizes[i]))
     return np.array(transformed)

@@ -5,12 +5,14 @@ from DataGenerator import load_data_test
 from DiceScore import dice_score_group
 from Train import transform
 from DataPostprocessing import detransform
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 MODELS_PATH = os.path.abspath("models")
-MODEL_FILE = "model_5.keras"
+MODEL_FILE = "model_1.keras"
 MODEL_PATH = os.path.join(MODELS_PATH, MODEL_FILE)
 
 DATA_PATH = os.path.abspath("data")
@@ -32,7 +34,7 @@ def get_prediction_scores(z_true_1, z_true_2, z_pred, mask):
 
 def save_images(z_pred):
     for i in range(z_pred.shape[0]):
-        img = z_pred[i, :, :, 0] * 255
+        img = z_pred[i] * 255
         path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
         cv2.imwrite(path, img)
 
@@ -56,10 +58,23 @@ def predict():
     print("DICE Score 2nd manual: " + str(score2))
     print("DICE Score average: " + str(total_score))
 
-    z_pred_detransformed = detransform(z_pred, original_image_sizes=images_sizes)
+    z_pred_detransformed = detransform(z_pred, masks=y_test, original_image_sizes=images_sizes)
 
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)
+    
+    fig, ax = plt.subplots(1,4, figsize=(10,5))
+
+    i = 0
+    ax[0].imshow(X_test[i], cmap='gray')
+    ax[0].set_title('Imagen de entrada')
+    ax[1].imshow(z_test_1[i], cmap='gray')
+    ax[1].set_title('Segmentación manual 1')
+    ax[2].imshow(z_test_2[i], cmap='gray')
+    ax[2].set_title('Segmentación manual 2')
+    ax[3].imshow(z_pred_detransformed[i], cmap='gray')
+    ax[3].set_title('Segmentación predicha')
+    plt.show()
 
 if __name__ == "__main__":
     predict()

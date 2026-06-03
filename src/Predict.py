@@ -40,16 +40,16 @@ def predict():
 
     MODEL = load_model(MODEL_PATH)
 
-    X_test, y_test, z_test_1, z_test_2 = load_data_test()
+    x_test, y_test, z_test_1, z_test_2 = load_data_test()
 
-    images_sizes = get_images_sizes(X_test)
+    images_sizes = get_images_sizes(x_test)
     
-    X_test = transform(X_test, masks=y_test)
+    x_test = transform(x_test, masks=y_test)
     z_test_1 = transform(z_test_1, masks=y_test)
     z_test_2 = transform(z_test_2, masks=y_test)
     y_test = transform(y_test)
     
-    z_pred = MODEL.predict(X_test)
+    z_pred = MODEL.predict(x_test)
 
     score1, score2, total_score = get_prediction_scores(z_test_1, z_test_2, z_pred, y_test)
     print("DICE Score 1st manual: " + str(score1))

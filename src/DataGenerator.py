@@ -92,23 +92,23 @@ def data_augmentation(image, mask, manual):
     manual = np.round(manual)
     return image, mask, manual
 
-def augment_data(X, y, z):
+def augment_data(x, y, z):
     augmented_images = []
     augmented_masks = []
     augmented_manual = []
     for i in range(DATA_AUGMENTATION_NUMBER):
-        n = np.random.randint(0, len(X))
-        im, mk, mn = data_augmentation(X[n], y[n], z[n])
+        n = np.random.randint(0, len(x))
+        im, mk, mn = data_augmentation(x[n], y[n], z[n])
         augmented_images.append(im)
         augmented_masks.append(mk)
         augmented_manual.append(mn)
     return np.array(augmented_images), np.array(augmented_masks), np.array(augmented_manual)
 
-def append_augmented_data(X, y, z):
-    augmented_X, augmented_y, augmented_z = augment_data(X, y, z)
+def append_augmented_data(x, y, z):
+    augmented_x, augmented_y, augmented_z = augment_data(x, y, z)
     for i in range(DATA_AUGMENTATION_NUMBER):
-        n = np.random.randint(0, len(X)+1)
-        X = np.insert(X, n, augmented_X[i], axis=0)
+        n = np.random.randint(0, len(x)+1)
+        x = np.insert(x, n, augmented_x[i], axis=0)
         y = np.insert(y, n, augmented_y[i], axis=0)
         z = np.insert(z, n, augmented_z[i], axis=0)
-    return X, y, z
+    return x, y, z

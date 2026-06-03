@@ -37,7 +37,7 @@ def train_model(overwrite_models=True):
     X, y, z = load_training_data()
     X, y, z = append_augmented_data(X, y, z)
 
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    kf = KFold(n_splits=5, shuffle=True)
     
     generated_images = []
     scores = []

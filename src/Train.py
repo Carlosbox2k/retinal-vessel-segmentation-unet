@@ -34,24 +34,24 @@ VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
 
 def train_model(overwrite_models=True):
 
-    X, y, z = load_training_data()
-    X, y, z = append_augmented_data(X, y, z)
+    x, y, z = load_training_data()
+    x, y, z = append_augmented_data(x, y, z)
 
     kf = KFold(n_splits=5, shuffle=True)
     
     generated_images = []
     scores = []
     fold = 1
-    for train_index, test_index in kf.split(X):
+    for train_index, test_index in kf.split(x):
 
         print(f"Training with fold {fold}")
 
-        # Separamos X, z (segmentación manual) e y (máscaras visuales FOV)
-        X_train, X_test = X[train_index], X[test_index]
+        # Separar x (imágenes de entrada), z (segmentaciones manuales) e y (máscaras)
+        x_train, x_test = x[train_index], x[test_index]
         z_train, z_test = z[train_index], z[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        X_train, X_test = transform(X_train, masks=y_train), transform(X_test, masks=y_test)
+        x_train, x_test = transform(x_train, masks=y_train), transform(x_test, masks=y_test)
         z_train, z_test = transform(z_train, masks=y_train), transform(z_test, masks=y_test)
         y_test = transform(y_test)
         
@@ -60,10 +60,10 @@ def train_model(overwrite_models=True):
         MODEL.compile(loss=bce_dice_loss, optimizer="Adam", metrics=[dice_score])
 
         # Entrenar el modelo
-        MODEL.fit(X_train, z_train, epochs=100, batch_size=3, verbose=1)
+        MODEL.fit(x_train, z_train, epochs=100, batch_size=3, verbose=1)
         
-        # Predecir sobre X_test
-        z_pred = MODEL.predict(X_test)
+        # Predecir sobre x_test
+        z_pred = MODEL.predict(x_test)
         transform_to_img(z_pred, generated_images)
 
         # Calcular métrica usando DICE score

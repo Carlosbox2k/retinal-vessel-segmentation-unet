@@ -71,18 +71,5 @@ def predict():
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)
     
-    fig, ax = plt.subplots(1,4, figsize=(10,5))
-
-    i = 0
-    ax[0].imshow(X_test[i], cmap='gray')
-    ax[0].set_title('Imagen de entrada')
-    ax[1].imshow(z_test_1[i], cmap='gray')
-    ax[1].set_title('Segmentación manual 1')
-    ax[2].imshow(z_test_2[i], cmap='gray')
-    ax[2].set_title('Segmentación manual 2')
-    ax[3].imshow(z_pred_detransformed[i], cmap='gray')
-    ax[3].set_title('Segmentación predicha')
-    plt.show()
-
 if __name__ == "__main__":
     predict()

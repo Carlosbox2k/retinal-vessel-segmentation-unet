@@ -7,13 +7,12 @@ from Train import transform
 from DataPostprocessing import detransform
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow as tf
 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 MODELS_PATH = os.path.abspath("models")
-MODEL_FILE = "model_1.keras"
-MODEL_PATH = os.path.join(MODELS_PATH, MODEL_FILE)
 
 DATA_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(DATA_PATH, "test")
@@ -40,25 +39,34 @@ def save_images(z_pred):
 
 def predict():
 
-    MODEL = load_model(MODEL_PATH)
-
-    X_test, y_test, z_test_1, z_test_2 = load_data_test()
-
-    images_sizes = get_images_sizes(X_test)
+    predictions = []
     
-    X_test = transform(X_test, masks=y_test)
-    z_test_1 = transform(z_test_1, masks=y_test)
-    z_test_2 = transform(z_test_2, masks=y_test)
-    y_test = transform(y_test)
-    
-    z_pred = MODEL.predict(X_test)
+    for model_file in os.listdir(MODELS_PATH):
 
-    score1, score2, total_score = get_prediction_scores(z_test_1, z_test_2, z_pred, y_test)
+        model_path = os.path.join(MODELS_PATH, model_file)
+        MODEL = load_model(model_path)
+
+        X_test, y_test, z_test_1, z_test_2 = load_data_test()
+
+        images_sizes = get_images_sizes(X_test)
+        
+        X_test = transform(X_test, masks=y_test)
+        z_test_1 = transform(z_test_1, masks=y_test)
+        z_test_2 = transform(z_test_2, masks=y_test)
+        y_test = transform(y_test)
+        
+        z_pred = MODEL.predict(X_test)
+        predictions.append(z_pred)
+
+    z_pred_average = np.mean(predictions, axis=0)
+    z_pred_rounded = np.round(z_pred_average)
+
+    score1, score2, total_score = get_prediction_scores(z_test_1, z_test_2, z_pred_rounded, y_test)
     print("DICE Score 1st manual: " + str(score1))
     print("DICE Score 2nd manual: " + str(score2))
     print("DICE Score average: " + str(total_score))
 
-    z_pred_detransformed = detransform(z_pred, masks=y_test, original_image_sizes=images_sizes)
+    z_pred_detransformed = detransform(z_pred_rounded, masks=y_test, original_image_sizes=images_sizes)
 
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)

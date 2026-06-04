@@ -1,13 +1,14 @@
 import numpy as np
 import os
 from dotenv import load_dotenv
-from Padding import padding_horizontal, padding_vertical, cut_horizontal, cut_vertical
+from dataManagement.Padding import padding_horizontal, padding_vertical, cut_horizontal, cut_vertical
 
 
 load_dotenv()
 
-HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
-VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
+
 
 def transform_image(image):
     horizontal_size = image.shape[1]

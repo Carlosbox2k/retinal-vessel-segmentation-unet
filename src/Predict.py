@@ -1,41 +1,25 @@
 from keras.saving import load_model
 import os
 import cv2
-from DataGenerator import load_data_test
-from DiceScore import dice_score_group
+from dataManagement.DataLoader import load_data_test
+from Metrics import dice_score_group
 from Train import transform
-from DataPostprocessing import detransform
-import matplotlib.pyplot as plt
+from dataManagement.DataPostprocessing import detransform
 import numpy as np
-import tensorflow as tf
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 MODELS_PATH = os.path.abspath("models")
-
 DATA_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 GENERATED_PATH = os.path.join(DATA_PATH, "generated")
-WRITE_IMAGES = True
 
-def get_images_sizes(images):
-    images_sizes = []
-    for i in range(images.shape[0]):
-        image = images[i]
-        images_sizes.append((image.shape[0], image.shape[1]))
-    return images_sizes
+WRITE_IMAGES = bool(os.getenv("WRITE_IMAGES"))
 
-def get_prediction_scores(z_true_1, z_true_2, z_pred, mask):
-    score1 = dice_score_group(z_true_1, z_pred, mask)
-    score2 = dice_score_group(z_true_2, z_pred, mask)
-    return score1, score2, (score1 + score2) / 2
-
-def save_images(z_pred):
-    for i in range(z_pred.shape[0]):
-        img = z_pred[i] * 255
-        path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
-        cv2.imwrite(path, img)
 
 def predict():
 
@@ -70,6 +54,24 @@ def predict():
 
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)
+
+def get_images_sizes(images):
+    images_sizes = []
+    for i in range(images.shape[0]):
+        image = images[i]
+        images_sizes.append((image.shape[0], image.shape[1]))
+    return images_sizes
+
+def get_prediction_scores(z_true_1, z_true_2, z_pred, mask):
+    score1 = dice_score_group(z_true_1, z_pred, mask)
+    score2 = dice_score_group(z_true_2, z_pred, mask)
+    return score1, score2, (score1 + score2) / 2
+
+def save_images(z_pred):
+    for i in range(z_pred.shape[0]):
+        img = z_pred[i] * 255
+        path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
+        cv2.imwrite(path, img)
     
 if __name__ == "__main__":
     predict()

@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from UnetModel import build_model
 from dotenv import load_dotenv
 from sklearn.model_selection import KFold
-from DataGenerator import load_training_data, append_augmented_data
-from DataPreprocessing import transform
-from DiceScore import dice_score_group, dice_score, bce_dice_loss
+from dataManagement.DataLoader import load_training_data
+from dataManagement.DataGenerator import append_augmented_data
+from dataManagement.DataPreprocessing import transform
+from Metrics import dice_score_group, dice_score, bce_dice_loss
 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
@@ -29,10 +30,14 @@ DATA_PATH = os.path.abspath("data")
 MODELS_PATH = os.path.abspath("models")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 TRAIN_PATH = os.path.join(DATA_PATH, "training")
-HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE", 576))
-VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE", 592))
 
-def train_model(overwrite_models=True):
+HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
+VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
+
+WRITE_MODELS = bool(os.getenv("WRITE_MODELS"))
+
+
+def train_model():
 
     x, y, z = load_training_data()
     x, y, z = append_augmented_data(x, y, z)
@@ -70,7 +75,8 @@ def train_model(overwrite_models=True):
         scores.append(dice_score_group(z_test, z_pred, y_test))
 
         MODEL_SAVE_PATH = os.path.join(MODELS_PATH, f"model_{fold}.keras")
-        MODEL.save(MODEL_SAVE_PATH, overwrite=overwrite_models)
+        if WRITE_MODELS:
+            MODEL.save(MODEL_SAVE_PATH, overwrite=True)
         
         fold += 1
 
@@ -91,4 +97,4 @@ def show_generated_images(generated_images):
     plt.show()
 
 if __name__ == "__main__":
-    train_model(overwrite_models=True)
+    train_model()

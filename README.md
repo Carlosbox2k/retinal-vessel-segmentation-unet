@@ -1,3 +1,5 @@
+<img width="1550" height="396" alt="image" src="https://github.com/user-attachments/assets/2764a3c4-c0a7-48c9-aa3e-d408d2ae80bc" />
+
 # Segmentación de Imágenes Médicas con Redes Convolucionales
 
 A continuación se explica la arquitectura del proyecto y cómo ejecutarlo.

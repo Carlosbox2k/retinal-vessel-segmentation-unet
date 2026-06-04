@@ -24,7 +24,7 @@ def detransform_image(image, original_image_size):
     return detransformed_image
 
 def detransform(images, masks, original_image_sizes):
-    transformed = []
+    detransformed = []
     for i in range(images.shape[0]):
-        transformed.append(detransform_image(masks[i] * images[i,:,:,0], original_image_sizes[i]))
-    return np.array(transformed)
+        detransformed.append(detransform_image(masks[i] * images[i,:,:,0], original_image_sizes[i]))
+    return np.array(detransformed)

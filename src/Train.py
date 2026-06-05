@@ -34,7 +34,7 @@ TRAIN_PATH = os.path.join(DATA_PATH, "training")
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
 
-WRITE_MODELS = bool(os.getenv("WRITE_MODELS"))
+WRITE_MODELS = eval(os.getenv("WRITE_MODELS"))
 
 
 def train_model():

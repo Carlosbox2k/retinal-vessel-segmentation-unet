@@ -44,7 +44,7 @@ En esta sección se define la función de cada módulo de la carpeta ```/src```.
 
 Implementación de la arquitectura U-Net.
 
-<img alt="image" width=50% height=50% src="model.png" />
+<img alt="image" src="model.png" />
 
 ### DataLoader
 

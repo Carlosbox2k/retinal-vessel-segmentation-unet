@@ -70,7 +70,7 @@ def get_prediction_scores(z_true_1, z_true_2, z_pred, mask):
 def save_images(z_pred):
     for i in range(z_pred.shape[0]):
         img = z_pred[i] * 255
-        path = os.path.join(GENERATED_PATH, f"generated_image_{i}.png")
+        path = os.path.join(GENERATED_PATH, f"generated_image_{i+1}.png")
         cv2.imwrite(path, img)
     
 if __name__ == "__main__":

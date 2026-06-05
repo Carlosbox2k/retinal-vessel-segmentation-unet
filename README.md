@@ -2,6 +2,12 @@
 
 # Segmentación de Imágenes Médicas con Redes Convolucionales
 
+En este informe se presenta un sistema de Inteligencia Artificial basado en la **arquitectura U-Net**, que combina **Redes Neuronales Convolucionales (CNNs)** con caminos de contracción (encoder) y de expansión (decoder), combinado con un procesado de los datos mediante **aumento de datos (data augmentation) y padding**. Se ha diseñado para generar **segmentaciones binarias** que precisen la localización de vasos sanguíneos en la retina de pacientes con retinopatía diabética.
+
+El modelo que hemos entrenado ha tenido muy buen rendimiento, ya que ha logrado generar máscaras de gran precisión. Con su uso, los **médicos oftalmólogos** pueden obtener una **localización automática aproximada de los vasos sanguíneos** de sus pacientes, facilitando así la detección de afecciones y ahorrando tiempo y esfuerzo.
+
+*Los resultados a los que se hacen referencia en la memoria del proyecto se encuentran en las carpetas ```/data/generated``` (segmentaciones predichas) y ```/models``` (modelos generados en cada pliegue del entrenamiento).*
+
 A continuación se explica la arquitectura del proyecto y cómo ejecutarlo.
 
 ## Jerarquía de archivos

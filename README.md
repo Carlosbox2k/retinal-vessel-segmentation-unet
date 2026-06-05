@@ -92,6 +92,7 @@ Antes de realizar cualquier ejecución es necesario **instalar las dependencias*
 pip install -r requirements.txt
 ```
 
+El proyecto también se encuentra alojado en un Jupyter Notebook de Google Colaboratory al que puede acceder a partir de este enlace: [Google Collab Notebook](https://colab.research.google.com/drive/17CE_rnzTrRTtE2hENTophvRwmayJBXo5?usp=sharing)
 ### Variables de entorno (en el .env)
 
 - **HORIZONTAL_UNET_SIZE** y **VERTICAL_UNET_SIZE**: Resolución horizontal y vertical de las imágenes de entrada deseadas para el modelo U-Net. **Tienen que ser múltiplo de 16.**

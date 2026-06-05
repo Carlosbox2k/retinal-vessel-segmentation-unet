@@ -26,8 +26,8 @@ WRITE_IMAGES = eval(os.getenv("WRITE_IMAGES"))
 def predict():
 
     predictions = []
-    
-    for model_file in os.listdir(MODELS_PATH):
+
+    for model_file in get_model_files():
 
         model_path = os.path.join(MODELS_PATH, model_file)
         MODEL = load_model(model_path)
@@ -56,6 +56,13 @@ def predict():
 
     if WRITE_IMAGES:
         save_images(z_pred_detransformed)
+
+def get_model_files():
+    model_files = []
+    for file in os.listdir(MODELS_PATH):
+        if file.endswith(".keras"):
+            model_files.append(file)
+    return model_files
 
 def get_images_sizes(images):
     images_sizes = []

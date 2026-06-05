@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER"))
+DATA_AUGMENTATION_SIZE = int(os.getenv("DATA_AUGMENTATION_SIZE"))
 
 
 def data_augmentation(image, mask, manual):
@@ -40,7 +40,7 @@ def augment_data(x, y, z):
     augmented_images = []
     augmented_masks = []
     augmented_manual = []
-    for i in range(DATA_AUGMENTATION_NUMBER):
+    for i in range(DATA_AUGMENTATION_SIZE):
         n = np.random.randint(0, len(x))
         im, mk, mn = data_augmentation(x[n], y[n], z[n])
         augmented_images.append(im)
@@ -50,7 +50,7 @@ def augment_data(x, y, z):
 
 def append_augmented_data(x, y, z):
     augmented_x, augmented_y, augmented_z = augment_data(x, y, z)
-    for i in range(DATA_AUGMENTATION_NUMBER):
+    for i in range(DATA_AUGMENTATION_SIZE):
         n = np.random.randint(0, len(x)+1)
         x = np.insert(x, n, augmented_x[i], axis=0)
         y = np.insert(y, n, augmented_y[i], axis=0)

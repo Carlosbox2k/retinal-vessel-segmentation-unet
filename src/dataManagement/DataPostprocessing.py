@@ -2,9 +2,10 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 from dataManagement.Padding import cut_horizontal, cut_vertical, padding_horizontal, padding_vertical
+from Find import find
 
 
-load_dotenv()
+load_dotenv(find(".env", is_file=True))
 
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))

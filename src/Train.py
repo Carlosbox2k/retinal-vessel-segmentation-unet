@@ -9,6 +9,7 @@ from dataManagement.DataLoader import load_training_data
 from dataManagement.DataGenerator import append_augmented_data
 from dataManagement.DataPreprocessing import transform
 from Metrics import dice_score_group, dice_score, bce_dice_loss
+from Find import find
 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # Ignorar logs informativos de CUDA y TF, mostrar solo errores fatales
@@ -24,16 +25,15 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-load_dotenv()
 
-DATA_PATH = os.path.abspath("data")
-MODELS_PATH = os.path.abspath("models")
-TEST_PATH = os.path.join(DATA_PATH, "test")
-TRAIN_PATH = os.path.join(DATA_PATH, "training")
+MODELS_PATH = find("models")
+DATA_PATH = find("data")
+TRAINING_PATH = find("training")
+
+load_dotenv(find(".env", is_file=True))
 
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
-
 WRITE_MODELS = eval(os.getenv("WRITE_MODELS"))
 SHOW_PREDICTIONS_IN_TRAINING = eval(os.getenv("SHOW_PREDICTIONS_IN_TRAINING"))
 

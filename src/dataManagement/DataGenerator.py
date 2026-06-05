@@ -2,9 +2,10 @@ import numpy as np
 import cv2
 import os
 from dotenv import load_dotenv
+from Find import find
 
 
-load_dotenv()
+load_dotenv(find(".env", is_file=True))
 
 DATA_AUGMENTATION_SIZE = int(os.getenv("DATA_AUGMENTATION_SIZE"))
 

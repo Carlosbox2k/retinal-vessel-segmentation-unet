@@ -2,15 +2,16 @@ from glob import glob
 import numpy as np
 import cv2
 import os
+from Find import find
 
 
-ROOT_PATH = os.path.abspath("data")
-TEST_PATH = os.path.join(ROOT_PATH, "test")
-TRAIN_PATH = os.path.join(ROOT_PATH, "training")
+DATA_PATH = find("data")
+TEST_PATH = os.path.join(DATA_PATH, "test")
+TRAINING_PATH = os.path.join(DATA_PATH, "training")
 
-TRAINING_IMAGES_PATH = os.path.join(TRAIN_PATH, "images")
-TRAINING_MASKS_PATH = os.path.join(TRAIN_PATH, "mask")
-TRAINING_MANUAL_PATH = os.path.join(TRAIN_PATH, "1st_manual")
+TRAINING_IMAGES_PATH = os.path.join(TRAINING_PATH, "images")
+TRAINING_MASKS_PATH = os.path.join(TRAINING_PATH, "mask")
+TRAINING_MANUAL_PATH = os.path.join(TRAINING_PATH, "1st_manual")
 
 TEST_IMAGES_PATH = os.path.join(TEST_PATH, "images")
 TEST_MASKS_PATH = os.path.join(TEST_PATH, "mask")

@@ -40,43 +40,47 @@ Módulos de gestión de las imágenes (carga de datos, data augmentation, paddin
 
 En esta sección se define la función de cada módulo de la carpeta ```/src```.
 
+### Find
+
+Encuentra archivos o directorios dentro del proyecto (útil si se utiliza un servidor de Jupyter para ejecutar el proyecto).
+
+### Metrics
+
+Define las métricas y funciones de pérdida que se usan en el entrenamiento y para evaluar las predicciones (**DICE score, BCE**).
+
+### Predict
+
+Realiza predicciones con todos los modelos guardados, las evalúa y las guarda en la carpeta ```/data/generated```.
+
+### Train
+
+Entrena el modelo con validación cruzada con 5 pliegues y guarda el modelo obtenido en cada pliegue en la carpeta ```/models```.
+
 ### UnetModel
 
 Implementación de la arquitectura U-Net.
 
 <img alt="image" src="model.png" />
 
-### DataLoader
-
-Carga los datos de entrada de la carpeta ```/data/training``` para los datos de entrenamiento y de ```/data/test``` para los datos de prueba.
-
 ### DataGenerator
 
 Realiza el aumento de datos (data augmentation).
 
-### DataPreprocessing
+### DataLoader
 
-Procesa las imágenes antes de usarlas como entradas del modelo (padding y multiplicación por máscaras).
+Carga los datos de entrada de la carpeta ```/data/training``` para los datos de entrenamiento y de ```/data/test``` para los datos de prueba.
 
 ### DataPostprocessing
 
 Procesa las imágenes que predice el modelo (unpadding y multiplicación por máscaras).
 
+### DataPreprocessing
+
+Procesa las imágenes antes de usarlas como entradas del modelo (padding y multiplicación por máscaras).
+
 ### Padding
 
 Métodos auxiliares para aplicar padding en DataPreprocessing y DataPostprocessing.
-
-### Metrics
-
-Define las métricas y funciones de pérdida que se usan en el entrenamiento y para evaluar las predicciones (**DICE score, BCE**).
-
-### Train
-
-Entrena el modelo con validación cruzada con 5 pliegues y guarda el modelo obtenido en cada pliegue en la carpeta ```/models```.
-
-### Predict
-
-Realiza predicciones con todos los modelos guardados, las evalúa y las guarda en la carpeta ```/data/generated```.
 
 ## Ejecución
 

@@ -7,16 +7,18 @@ from Train import transform
 from dataManagement.DataPostprocessing import detransform
 import numpy as np
 from dotenv import load_dotenv
+from Find import find
 
-
-load_dotenv()
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-MODELS_PATH = os.path.abspath("models")
-DATA_PATH = os.path.abspath("data")
+
+MODELS_PATH = find("models")
+DATA_PATH = find("data")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 GENERATED_PATH = os.path.join(DATA_PATH, "generated")
+
+load_dotenv(find(".env", is_file=True))
 
 WRITE_IMAGES = eval(os.getenv("WRITE_IMAGES"))
 

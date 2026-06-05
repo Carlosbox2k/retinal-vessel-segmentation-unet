@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATA_AUGMENTATION_NUMBER = int(os.getenv("DATA_AUGMENTATION_NUMBER"))
+DATA_AUGMENTATION_SIZE = int(os.getenv("DATA_AUGMENTATION_SIZE"))
 
 
 def data_augmentation(image, mask, manual):

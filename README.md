@@ -94,6 +94,7 @@ pip install -r requirements.txt
 - **DATA_AUGMENTATION_SIZE**: Cantidad de imágenes que se desean generar mediante data augmentation para entrenar el modelo.
 - **WRITE_MODELS**: Determina si guardar los modelos entrenados en cada pliegue en la carpeta ```/models```. **Si se pone a True, reescribirá los modelos que ya estén en la carpeta.**
 - **WRITE_IMAGES**: Determina si guardar las imágenes predichas en la carpeta ```/data/generated```. **Si se pone a True, reescribirá las imágenes que ya estén en la carpeta.**
+- **SHOW_PREDICTIONS_IN_TRAINING**: Determina si mostrar las imágenes generadas en el entrenamiento.
 
 ### Entrenamiento
 
@@ -101,7 +102,7 @@ Para entrenar el modelo U-Net se debe ejecutar el módulo ***Train.py***.
 
 Los datos de entrada se cargan desde ```/data/training```. A medida que se entrene el modelo en cada pliegue, se imprimirá en consola el progreso de cada época, así como el **valor del DICE score** y de la **pérdida (error)** de cada una.
 
-Tras el entrenamiento, se imprimen los DICE score medios obtenidos en cada pliegue.
+Tras el entrenamiento, se imprimen los DICE score medios obtenidos en cada pliegue. Además, si se ha determinado así en la variable de entorno **SHOW_PREDICTIONS_IN_TRAINING**, las segmentaciones predichas en cada pliegue del entrenamiento serán mostradas.
 
 Si se ha determinado así en la variable de entorno **WRITE_MODELS**, los modelos entrenados en cada pliegue se guardarán en la carpeta ```/models```.
 

@@ -34,8 +34,8 @@ TRAIN_PATH = os.path.join(DATA_PATH, "training")
 HORIZONTAL_UNET_SIZE = int(os.getenv("HORIZONTAL_UNET_SIZE"))
 VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
 
-WRITE_MODELS = bool(os.getenv("WRITE_MODELS"))
-
+WRITE_MODELS = eval(os.getenv("WRITE_MODELS"))
+SHOW_PREDICTIONS_IN_TRAINING = eval(os.getenv("SHOW_PREDICTIONS_IN_TRAINING"))
 
 def train_model():
 
@@ -82,7 +82,8 @@ def train_model():
 
     for i, score in enumerate(scores):
         print(f"Fold {i+1} DICE Score: {score}")
-    show_generated_images(generated_images)
+    if SHOW_PREDICTIONS_IN_TRAINING:
+        show_generated_images(generated_images)
 
 def transform_to_img(z_pred, generated_images):
     for i in range(z_pred.shape[0]):

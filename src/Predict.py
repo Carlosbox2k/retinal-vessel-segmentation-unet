@@ -18,7 +18,7 @@ DATA_PATH = os.path.abspath("data")
 TEST_PATH = os.path.join(DATA_PATH, "test")
 GENERATED_PATH = os.path.join(DATA_PATH, "generated")
 
-WRITE_IMAGES = bool(os.getenv("WRITE_IMAGES"))
+WRITE_IMAGES = eval(os.getenv("WRITE_IMAGES"))
 
 
 def predict():

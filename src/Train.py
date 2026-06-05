@@ -37,6 +37,7 @@ VERTICAL_UNET_SIZE = int(os.getenv("VERTICAL_UNET_SIZE"))
 WRITE_MODELS = eval(os.getenv("WRITE_MODELS"))
 SHOW_PREDICTIONS_IN_TRAINING = eval(os.getenv("SHOW_PREDICTIONS_IN_TRAINING"))
 
+
 def train_model():
 
     x, y, z = load_training_data()

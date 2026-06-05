@@ -1,6 +1,7 @@
 import os
 from keras import mixed_precision
 import tensorflow as tf
+import numpy as np
 import matplotlib.pyplot as plt
 from UnetModel import build_model
 from dotenv import load_dotenv
@@ -70,6 +71,7 @@ def train_model():
         
         # Predecir sobre x_test
         z_pred = MODEL.predict(x_test)
+        z_pred = np.round(z_pred)
         transform_to_img(z_pred, generated_images)
 
         # Calcular métrica usando DICE score

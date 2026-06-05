@@ -6,7 +6,7 @@ Este repositorio contiene un sistema de Inteligencia Artificial basado en la arq
 
 El modelo que hemos entrenado ha tenido muy buen rendimiento, ya que ha logrado generar máscaras de gran precisión. Con su uso, los **médicos oftalmólogos** pueden obtener una **localización automática aproximada de los vasos sanguíneos** de sus pacientes, facilitando así la detección de afecciones y ahorrando tiempo y esfuerzo.
 
-Se puede encontrar más información sobre el proyecto en su **memoria**, disponible en el archivo ```Memoria segmención de imágenes médicas con modelo U-net.pdf```.
+Se puede encontrar más información sobre el proyecto en su **memoria**, disponible en la carpeta ```/docs```.
 
 *Los resultados a los que se hacen referencia en la memoria del proyecto se encuentran en las carpetas ```/data/generated``` (segmentaciones predichas) y ```/models``` (modelos generados en cada pliegue del entrenamiento). Más adelante se detalla que la ejecución local de este proyecto puede llegar a sobreescribir estos archivos, y cómo evitarlo con las variables de entorno.*
 
@@ -31,6 +31,10 @@ Imágenes de prueba (escaneos, máscaras y segmentaciones manuales de los dos ex
 #### /data/training
 
 Imágenes de entrenamiento (escaneos, máscaras y segmentaciones manuales del experto).
+
+### /docs
+
+Documentación del proyecto (memoria).
 
 ### /models
 
